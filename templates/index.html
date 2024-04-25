@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Testes</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            color: #333;
+            background-color: darkcyan;
+        }
+
+        p {
+            color: #004d99;
+            font-weight: bolder;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        .chart {
+            width: 48%;
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        h1, h2 {
+            color: #004d99;
+        }
+
+        .chart-info {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 18px;
+            color: #666;
+        }
+
+        .error-box {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            background-color: #f9f9f9;
+        }
+
+        .error-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+            text-align: center;
+            width: 100%;
+            color: #004d99;
+        }
+
+        .test-info {
+            width: calc(50% - 20px);
+            margin: 5px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 20%;
+            background-color: #d9f2d9;
+            text-align: left;
+        }
+        
+        .test-info strong {
+            color: #004d99;
+        }
+
+        .error-title {
+            font-size: 18px;
+            font-weight: bolder;
+            margin-bottom: 10px;
+            text-align: center;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Report</h1>
+    <div class="container">
+        <div class="chart">
+            <h2>Execution Results</h2>
+            <div id="pie-chart"></div>
+            <div class="chart-info">
+                <div><span id="sucesso-count">{{ sucesso }}</span> PASS</div>
+                <div><span id="falha-count">{{ falha }}</span> FAILED</div>
+            </div>
+        </div>
+        <div class="chart">
+            <h2>Error List</h2>
+            <div id="erros-chart"></div>
+            <div class="chart-info">
+                {% for erro, quantidade in erros.items() %}
+                <div>{{ quantidade }} {{ 'failed' if quantidade == 1 else 'faileds' }} de "{{ erro }}"</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="error-container">
+        <div class="chart-info">
+            {% for erro, testes in erros.items() %}
+            <div class="error-box">
+                <div class="error-title">{{ erro }}</div>
+                {% for teste in dados_teste %}
+                {% if teste['error'] == erro %}
+                <div class="test-info">
+                    <div>
+                        <strong>Name:</strong> {{ teste['name'] }}
+                    </div>
+                    <div>
+                        <strong>TAGS:</strong> {{ teste['tags'] }}
+                    </div>
+                    <div>
+                        <strong>Test Plan:</strong> {{ teste['test plan'] }}
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        var pie_chart_data = {{ pie_chart_json | safe }};
+        Plotly.newPlot('pie-chart', pie_chart_data.data, pie_chart_data.layout);
+
+        var erros_chart_data = {{ erros_chart_json | safe }};
+        Plotly.newPlot('erros-chart', erros_chart_data.data, erros_chart_data.layout);
+    </script>
+</body>
+
+</html>
